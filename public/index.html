@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Exercise Tracker</title>
+</head>
+<body>
+  <h1>Exercise Tracker (minimal UI)</h1>
+
+  <section>
+    <h3>Create user</h3>
+    <form id="createUser">
+      <input name="username" placeholder="username" required />
+      <button type="submit">Create</button>
+    </form>
+    <pre id="userResult"></pre>
+  </section>
+
+  <section>
+    <h3>Add exercise</h3>
+    <form id="addExercise">
+      <input name="_id" placeholder="user id" required /><br/>
+      <input name="description" placeholder="description" required /><br/>
+      <input name="duration" placeholder="duration (minutes)" required /><br/>
+      <input name="date" placeholder="yyyy-mm-dd (optional)" /><br/>
+      <button type="submit">Add</button>
+    </form>
+    <pre id="exerciseResult"></pre>
+  </section>
+
+  <section>
+    <h3>Get logs</h3>
+    <form id="getLogs">
+      <input name="_id" placeholder="user id" required /><br/>
+      <input name="from" placeholder="from yyyy-mm-dd (optional)" /><br/>
+      <input name="to" placeholder="to yyyy-mm-dd (optional)" /><br/>
+      <input name="limit" placeholder="limit (optional)" /><br/>
+      <button type="submit">Get</button>
+    </form>
+    <pre id="logsResult"></pre>
+  </section>
+
+<script>
+document.getElementById('createUser').addEventListener('submit', async e => {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const resp = await fetch('/api/users', { method: 'POST', body: new URLSearchParams(form) });
+  document.getElementById('userResult').textContent = JSON.stringify(await resp.json(), null, 2);
+});
+document.getElementById('addExercise').addEventListener('submit', async e => {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const id = form.get('_id');
+  const body = new URLSearchParams();
+  body.append('description', form.get('description'));
+  body.append('duration', form.get('duration'));
+  if (form.get('date')) body.append('date', form.get('date'));
+  const resp = await fetch('/api/users/' + id + '/exercises', { method: 'POST', body });
+  document.getElementById('exerciseResult').textContent = JSON.stringify(await resp.json(), null, 2);
+});
+document.getElementById('getLogs').addEventListener('submit', async e => {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const id = form.get('_id');
+  const params = new URLSearchParams();
+  if (form.get('from')) params.append('from', form.get('from'));
+  if (form.get('to')) params.append('to', form.get('to'));
+  if (form.get('limit')) params.append('limit', form.get('limit'));
+  const resp = await fetch('/api/users/' + id + '/logs?' + params.toString());
+  document.getElementById('logsResult').textContent = JSON.stringify(await resp.json(), null, 2);
+});
+</script>
+</body>
+</html>
