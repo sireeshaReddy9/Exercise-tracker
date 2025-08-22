@@ -1,13 +1,12 @@
 require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // MongoDB connection
@@ -90,12 +89,13 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
     });
     await exercise.save();
 
+    // ✅ Fix: Order of response fields to match FCC test requirements
     res.json({
+      _id: user._id.toString(),
       username: user.username,
-      description: exercise.description,
-      duration: exercise.duration,
       date: exercise.date.toDateString(),
-      _id: user._id.toString()
+      duration: exercise.duration,
+      description: exercise.description
     });
   } catch (err) {
     console.error(err);
