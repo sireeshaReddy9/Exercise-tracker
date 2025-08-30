@@ -89,7 +89,6 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
     });
     await exercise.save();
 
-    // ✅ Fix: Order of response fields to match FCC test requirements
     res.json({
       _id: user._id.toString(),
       username: user.username,
@@ -103,7 +102,6 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
   }
 });
 
-// Get logs with optional from/to/limit
 app.get('/api/users/:_id/logs', async (req, res) => {
   try {
     const userId = req.params._id;
